@@ -5,6 +5,9 @@ import Layout from './components/Layout';
 import Entrar from './pages/Entrar';
 import Dashboard from './pages/Dashboard';
 import Configuracoes from './pages/Configuracoes';
+import CampanhasLista from './modules/campanhas/CampanhasLista';
+import CampanhaNova from './modules/campanhas/CampanhaNova';
+import CampanhaDetalhe from './modules/campanhas/CampanhaDetalhe';
 
 export default function App() {
   return (
@@ -22,6 +25,9 @@ export default function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="configuracoes" element={<Configuracoes />} />
+            <Route path="campanhas" element={<CampanhasLista />} />
+            <Route path="campanhas/nova" element={<CampanhaNova />} />
+            <Route path="campanhas/:id" element={<CampanhaDetalhe />} />
           </Route>
         </Routes>
       </AuthProvider>

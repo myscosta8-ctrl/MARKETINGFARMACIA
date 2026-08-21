@@ -5,7 +5,8 @@ import { SinoNotificacoes } from './SinoNotificacoes';
 
 const ROTA_POR_MODULO = {
   dashboard: '/',
-  configuracoes: '/configuracoes'
+  configuracoes: '/configuracoes',
+  campanhas: '/campanhas'
 };
 
 export default function Layout() {
