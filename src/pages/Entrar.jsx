@@ -21,7 +21,9 @@ export default function Entrar() {
       await entrar(email, senha);
       navigate(destino, { replace: true });
     } catch (err) {
-      setErro('E-mail ou senha incorretos.');
+      // eslint-disable-next-line no-console
+      console.error('[DEBUG LOGIN] Erro real capturado:', err);
+      setErro(`E-mail ou senha incorretos. [debug: ${err?.message || err?.name || String(err)}]`);
     } finally {
       setCarregando(false);
     }
