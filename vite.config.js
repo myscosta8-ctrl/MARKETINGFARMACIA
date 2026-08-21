@@ -3,8 +3,10 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Ambientes: dev (local), homolog (branch preview), prod (main/GitHub Pages)
+// base fixo na subpasta do repo, pois o GitHub Pages publica em
+// https://<usuario>.github.io/MARKETINGFARMACIA/ (não na raiz do domínio).
 export default defineConfig({
-  base: './',
+  base: '/MARKETINGFARMACIA/',
   plugins: [
     react(),
     VitePWA({

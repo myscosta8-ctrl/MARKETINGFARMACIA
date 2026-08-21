@@ -8,7 +8,7 @@ import Configuracoes from './pages/Configuracoes';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
         <Routes>
           <Route path="/entrar" element={<Entrar />} />
