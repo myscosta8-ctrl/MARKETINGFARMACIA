@@ -88,6 +88,22 @@ export default function Entrar() {
         <p className="text-center text-xs text-ink-500 mt-6">
           Contas são criadas por um administrador em Configurações → Usuários.
         </p>
+
+        <div className="mt-6 rounded-lg border border-amber-400/40 bg-amber-400/5 p-3 text-xs text-ink-300 space-y-1">
+          <p className="text-amber-400 font-medium">Diagnóstico temporário</p>
+          <p>
+            VITE_SUPABASE_URL:{' '}
+            {import.meta.env.VITE_SUPABASE_URL
+              ? `OK (${import.meta.env.VITE_SUPABASE_URL})`
+              : 'AUSENTE — não chegou no build'}
+          </p>
+          <p>
+            VITE_SUPABASE_ANON_KEY:{' '}
+            {import.meta.env.VITE_SUPABASE_ANON_KEY
+              ? `OK (${import.meta.env.VITE_SUPABASE_ANON_KEY.length} caracteres)`
+              : 'AUSENTE — não chegou no build'}
+          </p>
+        </div>
       </div>
     </div>
   );
