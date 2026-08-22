@@ -8,6 +8,7 @@ import Configuracoes from './pages/Configuracoes';
 import CampanhasLista from './modules/campanhas/CampanhasLista';
 import CampanhaNova from './modules/campanhas/CampanhaNova';
 import CampanhaDetalhe from './modules/campanhas/CampanhaDetalhe';
+import ProdutosLista from './modules/produtos/ProdutosLista';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="campanhas" element={<CampanhasLista />} />
             <Route path="campanhas/nova" element={<CampanhaNova />} />
             <Route path="campanhas/:id" element={<CampanhaDetalhe />} />
+            <Route path="produtos" element={<ProdutosLista />} />
           </Route>
         </Routes>
       </AuthProvider>

@@ -309,6 +309,36 @@ function ProdutosCampanha({ campanhaId, produtos, podeEditar, onSalvo }) {
   const [categoria, setCategoria] = useState('');
   const [marca, setMarca] = useState('');
   const [adicionando, setAdicionando] = useState(false);
+  const [catalogo, setCatalogo] = useState([]);
+  const [produtoSelecionado, setProdutoSelecionado] = useState('');
+  const [vinculando, setVinculando] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from('produtos')
+      .select('id, nome, categoria, marca')
+      .eq('ativo', true)
+      .order('nome')
+      .then(({ data }) => setCatalogo(data ?? []));
+  }, []);
+
+  async function vincularDoCatalogo(e) {
+    e.preventDefault();
+    if (!produtoSelecionado) return;
+    const p = catalogo.find((c) => c.id === produtoSelecionado);
+    if (!p) return;
+    setVinculando(true);
+    const { error } = await supabase
+      .from('campanha_produtos')
+      .insert({ campanha_id: campanhaId, produto_id: p.id, nome_produto: p.nome, categoria: p.categoria, marca: p.marca });
+    setVinculando(false);
+    if (error) {
+      logger.error('Falha ao vincular produto do catálogo', error);
+      return;
+    }
+    setProdutoSelecionado('');
+    onSalvo();
+  }
 
   async function adicionar(e) {
     e.preventDefault();
@@ -336,25 +366,50 @@ function ProdutosCampanha({ campanhaId, produtos, podeEditar, onSalvo }) {
         <ul className="text-sm text-ink-300 space-y-1 mb-3">
           {produtos.map((p) => (
             <li key={p.id} className="flex justify-between">
-              <span>{p.nome_produto}{p.marca ? ` — ${p.marca}` : ''}</span>
+              <span>
+                {p.nome_produto}{p.marca ? ` — ${p.marca}` : ''}
+                {p.produto_id && <span className="text-mint-400 text-xs ml-1.5">· catálogo</span>}
+              </span>
               <span className="text-ink-500 text-xs">{p.categoria}</span>
             </li>
           ))}
         </ul>
       )}
       {podeEditar && (
-        <form onSubmit={adicionar} className="flex flex-wrap gap-2">
-          <input placeholder="Produto" value={nome} onChange={(e) => setNome(e.target.value)} className="campo-mini flex-1 min-w-[140px]" />
-          <input placeholder="Categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)} className="campo-mini w-32" />
-          <input placeholder="Marca" value={marca} onChange={(e) => setMarca(e.target.value)} className="campo-mini w-32" />
-          <button
-            disabled={adicionando}
-            className="text-xs bg-mint-500 hover:bg-mint-600 text-base-950 font-medium px-3 py-1.5 rounded-lg transition disabled:opacity-60"
-          >
-            Adicionar
-          </button>
+        <div className="space-y-2">
+          {catalogo.length > 0 && (
+            <form onSubmit={vincularDoCatalogo} className="flex flex-wrap gap-2">
+              <select
+                value={produtoSelecionado}
+                onChange={(e) => setProdutoSelecionado(e.target.value)}
+                className="campo-mini flex-1 min-w-[160px]"
+              >
+                <option value="">Selecionar do catálogo…</option>
+                {catalogo.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nome}{p.marca ? ` — ${p.marca}` : ''}</option>
+                ))}
+              </select>
+              <button
+                disabled={vinculando || !produtoSelecionado}
+                className="text-xs bg-mint-500 hover:bg-mint-600 disabled:opacity-60 text-base-950 font-medium px-3 py-1.5 rounded-lg transition"
+              >
+                Vincular
+              </button>
+            </form>
+          )}
+          <form onSubmit={adicionar} className="flex flex-wrap gap-2">
+            <input placeholder="Produto avulso (sem catálogo)" value={nome} onChange={(e) => setNome(e.target.value)} className="campo-mini flex-1 min-w-[140px]" />
+            <input placeholder="Categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)} className="campo-mini w-32" />
+            <input placeholder="Marca" value={marca} onChange={(e) => setMarca(e.target.value)} className="campo-mini w-32" />
+            <button
+              disabled={adicionando}
+              className="text-xs border border-base-700 text-ink-300 hover:text-ink-100 px-3 py-1.5 rounded-lg transition disabled:opacity-60"
+            >
+              Adicionar avulso
+            </button>
+          </form>
           <style>{`.campo-mini { border-radius: 0.375rem; background: #0f172a; border: 1px solid #1f2d4d; padding: 0.4rem 0.6rem; color: #eef2f8; outline: none; font-size: 0.8rem; }`}</style>
-        </form>
+        </div>
       )}
     </div>
   );
