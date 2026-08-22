@@ -97,7 +97,7 @@ item K) quanto no filtro (lista vem só da própria farmácia via RLS de `produt
 | D2 | Auditoria preserva histórico após exclusão (snapshot em `logs_auditoria`) | PASSOU |
 | E | Sem `pode_ver` não visualiza | PASSOU |
 | F | Sem `pode_editar` não edita | PASSOU |
-| G/W | Usuário de outra farmácia não visualiza (isolamento cross-tenant) | PASSOU |
+| G | Usuário de outra farmácia não visualiza (isolamento cross-tenant) | PASSOU |
 | H | Usuário de outra farmácia não edita | PASSOU |
 | I | Não é possível alterar `farmacia_id` | PASSOU |
 | J | `criado_por = auth.uid()` | PASSOU |
@@ -114,10 +114,15 @@ item K) quanto no filtro (lista vem só da própria farmácia via RLS de `produt
 | T | Evento de dia inteiro funciona | PASSOU |
 | U | Mudança de mês (teste JS, virada nov→dez) | PASSOU |
 | V | Mudança de ano (teste JS, virada dez/2026→jan/2027) | PASSOU |
+| W | Isolamento cross-tenant (confirmação específica, item separado de G) | PASSOU |
 | X | Limpeza completa dos dados de teste | PASSOU |
 
-**24/24 testes passaram** (23 via SQL contra o banco real com RLS simulada + 2 via teste unitário
-das funções de navegação de data em Node, já que U/V são lógica pura de frontend).
+**25/25 testes passaram** (23 via SQL contra o banco real com RLS simulada + 2 via teste unitário
+das funções de navegação de data em Node — G e W validam a mesma condição de isolamento por
+farmácia, mas são contados como itens distintos por corresponderem a requisitos numerados
+separadamente na especificação; a versão anterior deste relatório os havia mesclado numa única
+linha da tabela, o que subcontou o total real em 1. Corrigido em 22/08/2026, ver
+`RELATORIO_CORRECAO_SPRINT_4.md`).
 
 ## 12. Regressão dos Sprints 1–3
 
