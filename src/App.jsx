@@ -10,6 +10,9 @@ import CampanhaNova from './modules/campanhas/CampanhaNova';
 import CampanhaDetalhe from './modules/campanhas/CampanhaDetalhe';
 import ProdutosLista from './modules/produtos/ProdutosLista';
 import CalendarioPage from './modules/calendario/CalendarioPage';
+import ConteudosLista from './modules/conteudo/ConteudosLista';
+import ConteudoNovo from './modules/conteudo/ConteudoNovo';
+import ConteudoDetalhe from './modules/conteudo/ConteudoDetalhe';
 
 export default function App() {
   return (
@@ -32,6 +35,9 @@ export default function App() {
             <Route path="campanhas/:id" element={<CampanhaDetalhe />} />
             <Route path="produtos" element={<ProdutosLista />} />
             <Route path="calendario" element={<CalendarioPage />} />
+            <Route path="conteudo" element={<ConteudosLista />} />
+            <Route path="conteudo/novo" element={<ConteudoNovo />} />
+            <Route path="conteudo/:id" element={<ConteudoDetalhe />} />
           </Route>
         </Routes>
       </AuthProvider>

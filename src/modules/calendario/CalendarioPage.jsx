@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { usePermissoes } from '../../hooks/usePermissoes';
 import { logger } from '../../utils/logger';
 import { labelStatus as labelStatusCampanha, corStatus as corStatusCampanha } from '../campanhas/constants';
+import { labelStatus as labelStatusConteudo, corStatus as corStatusConteudo } from '../conteudo/constants';
 import {
   TIPOS_EVENTO, STATUS_EVENTO, labelTipoEvento, labelStatusEvento, corStatusEvento,
   formatarDataISO, gradeMes, diasDaSemana,
@@ -40,6 +41,8 @@ export default function CalendarioPage() {
 
   const [mostrarCampanhas, setMostrarCampanhas] = useState(true);
   const [mostrarEventos, setMostrarEventos] = useState(true);
+  const [mostrarConteudos, setMostrarConteudos] = useState(true);
+  const [conteudos, setConteudos] = useState([]);
   const [filtroProduto, setFiltroProduto] = useState('');
   const [filtroResponsavel, setFiltroResponsavel] = useState('');
 
@@ -54,11 +57,12 @@ export default function CalendarioPage() {
   async function carregar() {
     setCarregando(true);
     setErro('');
-    const [{ data: c, error: eC }, { data: ev, error: eE }, { data: u }, { data: p }] = await Promise.all([
+    const [{ data: c, error: eC }, { data: ev, error: eE }, { data: u }, { data: p }, { data: ct }] = await Promise.all([
       supabase.from('campanhas').select('id, titulo, status, periodo_inicio, periodo_fim, responsavel_id, usuarios:responsavel_id(nome)'),
       supabase.from('eventos_calendario').select('*, produtos(nome), campanhas(titulo), usuarios:responsavel_id(nome)'),
       supabase.from('usuarios').select('id, nome'),
       supabase.from('produtos').select('id, nome').eq('ativo', true),
+      supabase.from('conteudos').select('id, titulo, status, data_agendamento, responsavel_id').not('data_agendamento', 'is', null),
     ]);
     if (eC || eE) {
       logger.error('Falha ao carregar calendário', eC || eE);
@@ -68,6 +72,7 @@ export default function CalendarioPage() {
     setEventos(ev ?? []);
     setUsuarios(u ?? []);
     setProdutos(p ?? []);
+    setConteudos(ct ?? []);
     setCarregando(false);
   }
 
@@ -104,8 +109,21 @@ export default function CalendarioPage() {
         });
       }
     }
+    if (mostrarConteudos) {
+      for (const ct of conteudos) {
+        if (filtroResponsavel && ct.responsavel_id !== filtroResponsavel) continue;
+        itens.push({
+          tipoItem: 'conteudo',
+          id: ct.id,
+          titulo: ct.titulo,
+          dataInicio: ct.data_agendamento,
+          dataFim: ct.data_agendamento,
+          status: ct.status,
+        });
+      }
+    }
     return itens;
-  }, [campanhas, eventos, mostrarCampanhas, mostrarEventos, filtroProduto, filtroResponsavel]);
+  }, [campanhas, eventos, conteudos, mostrarCampanhas, mostrarEventos, mostrarConteudos, filtroProduto, filtroResponsavel]);
 
   function itensNoDia(diaISO) {
     return itensCombinados.filter((i) => i.dataInicio <= diaISO && i.dataFim >= diaISO);
@@ -247,6 +265,10 @@ export default function CalendarioPage() {
           <input type="checkbox" checked={mostrarEventos} onChange={(e) => setMostrarEventos(e.target.checked)} />
           Eventos
         </label>
+        <label className="flex items-center gap-1.5 text-xs text-ink-300 border border-base-700 rounded-lg px-2 py-1">
+          <input type="checkbox" checked={mostrarConteudos} onChange={(e) => setMostrarConteudos(e.target.checked)} />
+          Conteúdo
+        </label>
         <select value={filtroProduto} onChange={(e) => setFiltroProduto(e.target.value)} className="rounded-lg bg-base-800 border border-base-700 px-2 py-1 text-xs text-ink-100">
           <option value="">Todos os produtos</option>
           {produtos.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
@@ -299,16 +321,24 @@ export default function CalendarioPage() {
 }
 
 function Pilula({ item }) {
-  const conteudo =
-    item.tipoItem === 'campanha' ? (
-      <span className={`text-[11px] px-1.5 py-0.5 rounded truncate block ${corStatusCampanha(item.status)}`}>{item.titulo}</span>
-    ) : (
-      <span className={`text-[11px] px-1.5 py-0.5 rounded truncate block ${corStatusEvento(item.status)}`}>{item.titulo}</span>
+  if (item.tipoItem === 'campanha') {
+    return (
+      <Link to={`/campanhas/${item.id}`} className="block" title={`Campanha: ${item.titulo}`}>
+        <span className={`text-[11px] px-1.5 py-0.5 rounded truncate block ${corStatusCampanha(item.status)}`}>{item.titulo}</span>
+      </Link>
     );
-  return item.tipoItem === 'campanha' ? (
-    <Link to={`/campanhas/${item.id}`} className="block" title={`Campanha: ${item.titulo}`}>{conteudo}</Link>
-  ) : (
-    <button className="block w-full text-left" title={`Evento: ${item.titulo}`}>{conteudo}</button>
+  }
+  if (item.tipoItem === 'conteudo') {
+    return (
+      <Link to={`/conteudo/${item.id}`} className="block" title={`Conteúdo: ${item.titulo}`}>
+        <span className={`text-[11px] px-1.5 py-0.5 rounded truncate block ${corStatusConteudo(item.status)}`}>{item.titulo}</span>
+      </Link>
+    );
+  }
+  return (
+    <button className="block w-full text-left" title={`Evento: ${item.titulo}`}>
+      <span className={`text-[11px] px-1.5 py-0.5 rounded truncate block ${corStatusEvento(item.status)}`}>{item.titulo}</span>
+    </button>
   );
 }
 
@@ -413,12 +443,16 @@ function VisaoAgenda({ itens, onClickItem }) {
                 <span className="text-ink-100">
                   {item.tipoItem === 'campanha' ? (
                     <Link to={`/campanhas/${item.id}`} className="hover:text-mint-400">{item.titulo}</Link>
+                  ) : item.tipoItem === 'conteudo' ? (
+                    <Link to={`/conteudo/${item.id}`} className="hover:text-mint-400">{item.titulo}</Link>
                   ) : (
                     <button className="hover:text-mint-400 text-left">{item.titulo}</button>
                   )}
                 </span>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${item.tipoItem === 'campanha' ? corStatusCampanha(item.status) : corStatusEvento(item.status)}`}>
-                  {item.tipoItem === 'campanha' ? labelStatusCampanha(item.status) : labelStatusEvento(item.status)}
+                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                  item.tipoItem === 'campanha' ? corStatusCampanha(item.status) : item.tipoItem === 'conteudo' ? corStatusConteudo(item.status) : corStatusEvento(item.status)
+                }`}>
+                  {item.tipoItem === 'campanha' ? labelStatusCampanha(item.status) : item.tipoItem === 'conteudo' ? labelStatusConteudo(item.status) : labelStatusEvento(item.status)}
                 </span>
               </div>
             ))}
