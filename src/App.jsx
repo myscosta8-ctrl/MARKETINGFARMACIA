@@ -9,6 +9,7 @@ import CampanhasLista from './modules/campanhas/CampanhasLista';
 import CampanhaNova from './modules/campanhas/CampanhaNova';
 import CampanhaDetalhe from './modules/campanhas/CampanhaDetalhe';
 import ProdutosLista from './modules/produtos/ProdutosLista';
+import CalendarioPage from './modules/calendario/CalendarioPage';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="campanhas/nova" element={<CampanhaNova />} />
             <Route path="campanhas/:id" element={<CampanhaDetalhe />} />
             <Route path="produtos" element={<ProdutosLista />} />
+            <Route path="calendario" element={<CalendarioPage />} />
           </Route>
         </Routes>
       </AuthProvider>

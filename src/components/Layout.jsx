@@ -7,7 +7,8 @@ const ROTA_POR_MODULO = {
   dashboard: '/',
   configuracoes: '/configuracoes',
   campanhas: '/campanhas',
-  produtos: '/produtos'
+  produtos: '/produtos',
+  calendario: '/calendario'
 };
 
 export default function Layout() {
