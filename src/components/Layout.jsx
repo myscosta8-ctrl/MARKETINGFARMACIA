@@ -12,7 +12,8 @@ const ROTA_POR_MODULO = {
   conteudo: '/conteudo',
   oportunidades: '/oportunidades',
   ia: '/ia',
-  crm: '/crm'
+  crm: '/crm',
+  leads: '/leads'
 };
 
 export default function Layout() {

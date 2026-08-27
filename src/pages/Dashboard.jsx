@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [contagemOportunidades, setContagemOportunidades] = useState(null);
   const [contagemIA, setContagemIA] = useState(null);
   const [contagemCrm, setContagemCrm] = useState(null);
+  const [contagemLeads, setContagemLeads] = useState(null);
 
   useEffect(() => {
     supabase
@@ -42,6 +43,15 @@ export default function Dashboard() {
         const ativos = data.filter((c) => c.status !== 'inativo').length;
         setContagemCrm({ total: data.length, ativos });
       });
+
+    supabase
+      .from('leads')
+      .select('status')
+      .then(({ data }) => {
+        if (!data) return;
+        const emAberto = data.filter((l) => !['convertido', 'perdido'].includes(l.status)).length;
+        setContagemLeads({ total: data.length, emAberto });
+      });
   }, []);
 
   const cartoes = [
@@ -69,6 +79,14 @@ export default function Dashboard() {
           link: '/crm',
         }
       : { titulo: 'Contatos no CRM', valor: '—', nota: 'Carregando…', link: '/crm' },
+    contagemLeads
+      ? {
+          titulo: 'Leads no funil',
+          valor: String(contagemLeads.emAberto),
+          nota: `${contagemLeads.total} lead(s) no total`,
+          link: '/leads',
+        }
+      : { titulo: 'Leads no funil', valor: '—', nota: 'Carregando…', link: '/leads' },
     contagemIA
       ? {
           titulo: 'Solicitações de IA',
