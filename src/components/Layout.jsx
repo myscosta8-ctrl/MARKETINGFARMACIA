@@ -13,7 +13,8 @@ const ROTA_POR_MODULO = {
   oportunidades: '/oportunidades',
   ia: '/ia',
   crm: '/crm',
-  leads: '/leads'
+  leads: '/leads',
+  whatsapp: '/whatsapp'
 };
 
 export default function Layout() {

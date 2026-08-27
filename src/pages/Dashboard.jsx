@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [contagemIA, setContagemIA] = useState(null);
   const [contagemCrm, setContagemCrm] = useState(null);
   const [contagemLeads, setContagemLeads] = useState(null);
+  const [contagemWhatsapp, setContagemWhatsapp] = useState(null);
 
   useEffect(() => {
     supabase
@@ -52,6 +53,11 @@ export default function Dashboard() {
         const emAberto = data.filter((l) => !['convertido', 'perdido'].includes(l.status)).length;
         setContagemLeads({ total: data.length, emAberto });
       });
+
+    supabase
+      .from('whatsapp_mensagens')
+      .select('id')
+      .then(({ data }) => setContagemWhatsapp({ total: data?.length ?? 0 }));
   }, []);
 
   const cartoes = [
@@ -87,6 +93,14 @@ export default function Dashboard() {
           link: '/leads',
         }
       : { titulo: 'Leads no funil', valor: '—', nota: 'Carregando…', link: '/leads' },
+    contagemWhatsapp
+      ? {
+          titulo: 'Mensagens WhatsApp',
+          valor: String(contagemWhatsapp.total),
+          nota: contagemWhatsapp.total === 0 ? 'Nenhuma mensagem ainda' : 'No histórico da farmácia',
+          link: '/whatsapp',
+        }
+      : { titulo: 'Mensagens WhatsApp', valor: '—', nota: 'Carregando…', link: '/whatsapp' },
     contagemIA
       ? {
           titulo: 'Solicitações de IA',
@@ -103,8 +117,8 @@ export default function Dashboard() {
         Olá, {perfil?.nome?.split(' ')[0] ?? ''}
       </h1>
       <p className="text-ink-500 text-sm mt-1">
-        Campanhas, Produtos, Calendário, Conteúdo, Oportunidades, IA e CRM disponíveis. Os demais
-        módulos entram nos próximos sprints.
+        Campanhas, Produtos, Calendário, Conteúdo, Oportunidades, CRM, Leads, IA e WhatsApp
+        disponíveis. Os demais módulos entram nos próximos sprints.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
@@ -136,12 +150,20 @@ export default function Dashboard() {
             : identificação e acompanhamento até conclusão ou descarte
           </li>
           <li>
+            <Link to="/crm" className="text-mint-400 hover:text-mint-300">CRM</Link>
+            : contatos, responsáveis e histórico de interações
+          </li>
+          <li>
+            <Link to="/leads" className="text-mint-400 hover:text-mint-300">Leads</Link>
+            : funil de aquisição, com conversão rastreável em contato do CRM
+          </li>
+          <li>
             <Link to="/ia" className="text-mint-400 hover:text-mint-300">IA</Link>
             : central de solicitações com histórico auditável (sem provedor configurado ainda)
           </li>
           <li>
-            <Link to="/crm" className="text-mint-400 hover:text-mint-300">CRM</Link>
-            : contatos, responsáveis e histórico de interações
+            <Link to="/whatsapp" className="text-mint-400 hover:text-mint-300">WhatsApp</Link>
+            : histórico de mensagens vinculado a contatos/leads (sem credencial oficial configurada ainda)
           </li>
         </ul>
       </div>

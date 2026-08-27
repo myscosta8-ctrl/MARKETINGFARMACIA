@@ -19,6 +19,7 @@ import CrmLista from './modules/crm/CrmLista';
 import CrmDetalhe from './modules/crm/CrmDetalhe';
 import LeadsLista from './modules/leads/LeadsLista';
 import LeadDetalhe from './modules/leads/LeadDetalhe';
+import WhatsAppPage from './modules/whatsapp/WhatsAppPage';
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="crm/:id" element={<CrmDetalhe />} />
             <Route path="leads" element={<LeadsLista />} />
             <Route path="leads/:id" element={<LeadDetalhe />} />
+            <Route path="whatsapp" element={<WhatsAppPage />} />
           </Route>
         </Routes>
       </AuthProvider>
