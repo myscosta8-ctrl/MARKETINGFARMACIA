@@ -16,7 +16,8 @@ const ROTA_POR_MODULO = {
   leads: '/leads',
   whatsapp: '/whatsapp',
   instagram: '/instagram',
-  facebook: '/facebook'
+  facebook: '/facebook',
+  anuncios: '/anuncios'
 };
 
 export default function Layout() {

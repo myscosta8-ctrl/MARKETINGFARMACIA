@@ -22,6 +22,7 @@ import LeadDetalhe from './modules/leads/LeadDetalhe';
 import WhatsAppPage from './modules/whatsapp/WhatsAppPage';
 import InstagramPage from './modules/instagram/InstagramPage';
 import FacebookPage from './modules/facebook/FacebookPage';
+import AnunciosLista from './modules/anuncios/AnunciosLista';
 
 export default function App() {
   return (
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="whatsapp" element={<WhatsAppPage />} />
             <Route path="instagram" element={<InstagramPage />} />
             <Route path="facebook" element={<FacebookPage />} />
+            <Route path="anuncios" element={<AnunciosLista />} />
           </Route>
         </Routes>
       </AuthProvider>

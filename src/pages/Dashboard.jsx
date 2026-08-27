@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [contagemWhatsapp, setContagemWhatsapp] = useState(null);
   const [contagemInstagram, setContagemInstagram] = useState(null);
   const [contagemFacebook, setContagemFacebook] = useState(null);
+  const [contagemAnuncios, setContagemAnuncios] = useState(null);
 
   useEffect(() => {
     supabase
@@ -70,6 +71,15 @@ export default function Dashboard() {
       .from('facebook_publicacoes')
       .select('id')
       .then(({ data }) => setContagemFacebook({ total: data?.length ?? 0 }));
+
+    supabase
+      .from('anuncios')
+      .select('status')
+      .then(({ data }) => {
+        if (!data) return;
+        const ativos = data.filter((a) => ['ativo', 'pausado'].includes(a.status)).length;
+        setContagemAnuncios({ total: data.length, ativos });
+      });
   }, []);
 
   const cartoes = [
@@ -105,6 +115,14 @@ export default function Dashboard() {
           link: '/leads',
         }
       : { titulo: 'Leads no funil', valor: '—', nota: 'Carregando…', link: '/leads' },
+    contagemAnuncios
+      ? {
+          titulo: 'Anúncios ativos/pausados',
+          valor: String(contagemAnuncios.ativos),
+          nota: `${contagemAnuncios.total} anúncio(s) no total`,
+          link: '/anuncios',
+        }
+      : { titulo: 'Anúncios ativos/pausados', valor: '—', nota: 'Carregando…', link: '/anuncios' },
     contagemWhatsapp
       ? {
           titulo: 'Mensagens WhatsApp',
@@ -146,7 +164,7 @@ export default function Dashboard() {
       </h1>
       <p className="text-ink-500 text-sm mt-1">
         Campanhas, Produtos, Calendário, Conteúdo, Oportunidades, CRM, Leads, IA, WhatsApp,
-        Instagram e Facebook disponíveis. Os demais módulos entram nos próximos sprints.
+        Instagram, Facebook e Anúncios disponíveis. Os demais módulos entram nos próximos sprints.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
@@ -200,6 +218,10 @@ export default function Dashboard() {
           <li>
             <Link to="/facebook" className="text-mint-400 hover:text-mint-300">Facebook</Link>
             : publicação de conteúdos marcados com esse canal (sem credencial oficial configurada ainda)
+          </li>
+          <li>
+            <Link to="/anuncios" className="text-mint-400 hover:text-mint-300">Anúncios</Link>
+            : planejamento e aprovação de anúncios pagos vinculados a campanhas (ativação real depende de credencial oficial — Meta Ads/Google Ads)
           </li>
         </ul>
       </div>
