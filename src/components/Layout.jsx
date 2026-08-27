@@ -10,7 +10,8 @@ const ROTA_POR_MODULO = {
   produtos: '/produtos',
   calendario: '/calendario',
   conteudo: '/conteudo',
-  oportunidades: '/oportunidades'
+  oportunidades: '/oportunidades',
+  ia: '/ia'
 };
 
 export default function Layout() {

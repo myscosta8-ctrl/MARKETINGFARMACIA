@@ -14,6 +14,7 @@ import ConteudosLista from './modules/conteudo/ConteudosLista';
 import ConteudoNovo from './modules/conteudo/ConteudoNovo';
 import ConteudoDetalhe from './modules/conteudo/ConteudoDetalhe';
 import OportunidadesLista from './modules/oportunidades/OportunidadesLista';
+import IAPage from './modules/ia/IAPage';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="conteudo/novo" element={<ConteudoNovo />} />
             <Route path="conteudo/:id" element={<ConteudoDetalhe />} />
             <Route path="oportunidades" element={<OportunidadesLista />} />
+            <Route path="ia" element={<IAPage />} />
           </Route>
         </Routes>
       </AuthProvider>
