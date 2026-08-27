@@ -13,6 +13,7 @@ import CalendarioPage from './modules/calendario/CalendarioPage';
 import ConteudosLista from './modules/conteudo/ConteudosLista';
 import ConteudoNovo from './modules/conteudo/ConteudoNovo';
 import ConteudoDetalhe from './modules/conteudo/ConteudoDetalhe';
+import OportunidadesLista from './modules/oportunidades/OportunidadesLista';
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="conteudo" element={<ConteudosLista />} />
             <Route path="conteudo/novo" element={<ConteudoNovo />} />
             <Route path="conteudo/:id" element={<ConteudoDetalhe />} />
+            <Route path="oportunidades" element={<OportunidadesLista />} />
           </Route>
         </Routes>
       </AuthProvider>
