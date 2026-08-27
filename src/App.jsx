@@ -20,6 +20,7 @@ import CrmDetalhe from './modules/crm/CrmDetalhe';
 import LeadsLista from './modules/leads/LeadsLista';
 import LeadDetalhe from './modules/leads/LeadDetalhe';
 import WhatsAppPage from './modules/whatsapp/WhatsAppPage';
+import InstagramPage from './modules/instagram/InstagramPage';
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="leads" element={<LeadsLista />} />
             <Route path="leads/:id" element={<LeadDetalhe />} />
             <Route path="whatsapp" element={<WhatsAppPage />} />
+            <Route path="instagram" element={<InstagramPage />} />
           </Route>
         </Routes>
       </AuthProvider>

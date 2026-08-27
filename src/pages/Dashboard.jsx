@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [contagemCrm, setContagemCrm] = useState(null);
   const [contagemLeads, setContagemLeads] = useState(null);
   const [contagemWhatsapp, setContagemWhatsapp] = useState(null);
+  const [contagemInstagram, setContagemInstagram] = useState(null);
 
   useEffect(() => {
     supabase
@@ -58,6 +59,11 @@ export default function Dashboard() {
       .from('whatsapp_mensagens')
       .select('id')
       .then(({ data }) => setContagemWhatsapp({ total: data?.length ?? 0 }));
+
+    supabase
+      .from('instagram_publicacoes')
+      .select('id')
+      .then(({ data }) => setContagemInstagram({ total: data?.length ?? 0 }));
   }, []);
 
   const cartoes = [
@@ -101,6 +107,14 @@ export default function Dashboard() {
           link: '/whatsapp',
         }
       : { titulo: 'Mensagens WhatsApp', valor: '—', nota: 'Carregando…', link: '/whatsapp' },
+    contagemInstagram
+      ? {
+          titulo: 'Publicações Instagram',
+          valor: String(contagemInstagram.total),
+          nota: contagemInstagram.total === 0 ? 'Nenhuma publicação ainda' : 'No histórico da farmácia',
+          link: '/instagram',
+        }
+      : { titulo: 'Publicações Instagram', valor: '—', nota: 'Carregando…', link: '/instagram' },
     contagemIA
       ? {
           titulo: 'Solicitações de IA',
@@ -117,8 +131,8 @@ export default function Dashboard() {
         Olá, {perfil?.nome?.split(' ')[0] ?? ''}
       </h1>
       <p className="text-ink-500 text-sm mt-1">
-        Campanhas, Produtos, Calendário, Conteúdo, Oportunidades, CRM, Leads, IA e WhatsApp
-        disponíveis. Os demais módulos entram nos próximos sprints.
+        Campanhas, Produtos, Calendário, Conteúdo, Oportunidades, CRM, Leads, IA, WhatsApp e
+        Instagram disponíveis. Os demais módulos entram nos próximos sprints.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
@@ -164,6 +178,10 @@ export default function Dashboard() {
           <li>
             <Link to="/whatsapp" className="text-mint-400 hover:text-mint-300">WhatsApp</Link>
             : histórico de mensagens vinculado a contatos/leads (sem credencial oficial configurada ainda)
+          </li>
+          <li>
+            <Link to="/instagram" className="text-mint-400 hover:text-mint-300">Instagram</Link>
+            : publicação de conteúdos marcados com esse canal (sem credencial oficial configurada ainda)
           </li>
         </ul>
       </div>

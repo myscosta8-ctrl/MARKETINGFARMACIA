@@ -14,7 +14,8 @@ const ROTA_POR_MODULO = {
   ia: '/ia',
   crm: '/crm',
   leads: '/leads',
-  whatsapp: '/whatsapp'
+  whatsapp: '/whatsapp',
+  instagram: '/instagram'
 };
 
 export default function Layout() {
