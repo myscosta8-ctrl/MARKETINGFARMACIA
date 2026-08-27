@@ -1,54 +1,56 @@
 -- ============================================================================
--- FARMA MARKETING — Migration 008: Correção S3-01
--- Integridade de `produtos.criado_por`. Escopo estrito: só este campo, só
--- esta tabela. Não altera 001-007, não altera nenhuma outra funcionalidade
--- do módulo Produtos ou de Campanhas.
+-- FARMA MARKETING — Migration 012: Correção dos achados M1 e B1
+-- (AUDITORIA_SPRINT_5.md, seção 27 — Pendências)
+-- Escopo estrito: só os dois pontos abaixo. Não edita 001-011, não altera
+-- nenhuma outra funcionalidade.
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- Antes: `criado_por` era um campo comum, preenchido pelo que o cliente
--- mandasse (na prática, o frontend envia perfil?.id, mas nada no banco
--- impedia um cliente malicioso de informar o UUID de outro usuário via API).
---
--- Agora: trigger BEFORE INSERT OR UPDATE, mesmo padrão já usado em
--- `checar_aprovacao_campanha` (campanhas.aprovado_por) e
--- `sincronizar_farmacia_filho_campanha` (farmacia_id das tabelas filhas) —
--- reaproveita a arquitetura existente em vez de inventar mecanismo novo.
---
--- No INSERT: `criado_por` é sempre sobrescrito para auth.uid(), não importa
--- o que o cliente envie (mesmo UUID de terceiro, mesmo null). Se não houver
--- usuário autenticado, a criação é rejeitada explicitamente.
---
--- No UPDATE: `criado_por` fica imutável — ninguém pode reatribuir a autoria
--- de um produto já existente (mesma classe de proteção, aplicada de forma
--- consistente; sem isso, um UPDATE poderia forjar autoria tão facilmente
--- quanto um INSERT).
+-- M1 — blindagem redundante de farmacia_id no INSERT de `conteudos` e
+-- `eventos_calendario`. A trigger já força farmacia_id = auth_farmacia_id()
+-- antes da RLS avaliar o WITH CHECK final, então isso não muda nenhum
+-- comportamento hoje (confirmado na auditoria) — é só remover a dependência
+-- única na trigger, caso ela seja alterada incorretamente no futuro.
 -- ----------------------------------------------------------------------------
-create or replace function proteger_criado_por_produto()
-returns trigger language plpgsql as $$
-begin
-  if tg_op = 'INSERT' then
-    if auth.uid() is null then
-      raise exception 'Criação de produto requer usuário autenticado.';
-    end if;
-    new.criado_por := auth.uid();
-    return new;
-  end if;
+drop policy if exists conteudos_insert on conteudos;
 
-  -- UPDATE: criado_por é imutável a partir daqui.
-  if new.criado_por is distinct from old.criado_por then
-    raise exception 'criado_por não pode ser alterado após a criação do produto.';
-  end if;
-  return new;
-end;
-$$;
+create policy conteudos_insert on conteudos for insert
+  with check (
+    farmacia_id = auth_farmacia_id()
+    and exists (select 1 from permissoes where papel = auth_papel() and modulo_id = 'conteudo' and pode_editar)
+  );
 
-alter function proteger_criado_por_produto() set search_path = public;
+drop policy if exists eventos_calendario_insert on eventos_calendario;
 
-create trigger trg_proteger_criado_por_produto
-  before insert or update on produtos
-  for each row execute function proteger_criado_por_produto();
+create policy eventos_calendario_insert on eventos_calendario for insert
+  with check (
+    farmacia_id = auth_farmacia_id()
+    and exists (select 1 from permissoes where papel = auth_papel() and modulo_id = 'calendario' and pode_editar)
+  );
 
--- Trigger function não é SECURITY DEFINER (não precisa: só lê auth.uid() e
--- compara valores da própria linha) — nenhuma RPC nova, nenhuma exposição
--- adicional de EXECUTE a revogar.
+-- ----------------------------------------------------------------------------
+-- B1 — política de UPDATE ausente em `conteudo_canais` e `conteudo_midias`.
+-- Mesmo padrão já usado em `campanha_produtos`/`campanha_conteudos`
+-- (migration 005): USING exige farmácia + pode_editar; WITH CHECK garante
+-- que o conteúdo referenciado (mesmo que trocado) continua na farmácia do
+-- usuário — mesma lógica de bloqueio cross-tenant já usada no INSERT.
+-- ----------------------------------------------------------------------------
+create policy conteudo_canais_update on conteudo_canais for update
+  using (
+    farmacia_id = auth_farmacia_id()
+    and exists (select 1 from permissoes where papel = auth_papel() and modulo_id = 'conteudo' and pode_editar)
+  )
+  with check (
+    farmacia_id = auth_farmacia_id()
+    and exists (select 1 from conteudos c where c.id = conteudo_id and c.farmacia_id = auth_farmacia_id())
+  );
+
+create policy conteudo_midias_update on conteudo_midias for update
+  using (
+    farmacia_id = auth_farmacia_id()
+    and exists (select 1 from permissoes where papel = auth_papel() and modulo_id = 'conteudo' and pode_editar)
+  )
+  with check (
+    farmacia_id = auth_farmacia_id()
+    and exists (select 1 from conteudos c where c.id = conteudo_id and c.farmacia_id = auth_farmacia_id())
+  );
