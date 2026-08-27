@@ -11,7 +11,8 @@ const ROTA_POR_MODULO = {
   calendario: '/calendario',
   conteudo: '/conteudo',
   oportunidades: '/oportunidades',
-  ia: '/ia'
+  ia: '/ia',
+  crm: '/crm'
 };
 
 export default function Layout() {
