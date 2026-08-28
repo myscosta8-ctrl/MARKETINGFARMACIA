@@ -12,6 +12,12 @@ export function SinoNotificacoes() {
   const [notificacoes, setNotificacoes] = useState([]);
   const [carregando, setCarregando] = useState(false);
   const containerRef = useRef(null);
+  const abertoRef = useRef(false);
+
+  function definirAberto(valor) {
+    abertoRef.current = valor;
+    setAberto(valor);
+  }
 
   async function carregarContagem() {
     const { count } = await supabase
@@ -46,7 +52,7 @@ export function SinoNotificacoes() {
         { event: 'INSERT', schema: 'public', table: 'notificacoes' },
         () => {
           carregarContagem();
-          if (aberto) carregarLista();
+          if (abertoRef.current) carregarLista();
         }
       )
       .subscribe();
@@ -57,7 +63,7 @@ export function SinoNotificacoes() {
 
   useEffect(() => {
     function aoClicarFora(e) {
-      if (containerRef.current && !containerRef.current.contains(e.target)) setAberto(false);
+      if (containerRef.current && !containerRef.current.contains(e.target)) definirAberto(false);
     }
     document.addEventListener('mousedown', aoClicarFora);
     return () => document.removeEventListener('mousedown', aoClicarFora);
@@ -65,7 +71,7 @@ export function SinoNotificacoes() {
 
   function alternar() {
     const vaiAbrir = !aberto;
-    setAberto(vaiAbrir);
+    definirAberto(vaiAbrir);
     if (vaiAbrir) carregarLista();
   }
 
@@ -76,7 +82,7 @@ export function SinoNotificacoes() {
       setNotificacoes((lista) => lista.map((n) => (n.id === notif.id ? { ...n, lida: true } : n)));
       setNaoLidas((n) => Math.max(0, n - 1));
     }
-    setAberto(false);
+    definirAberto(false);
     if (notif.link) navigate(notif.link);
   }
 
