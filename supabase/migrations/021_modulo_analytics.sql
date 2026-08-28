@@ -1,0 +1,34 @@
+-- ============================================================================
+-- FARMA MARKETING — Migration 021: Módulo Analytics (Sprint 14)
+-- Não edita 001-020.
+--
+-- DECISÃO ARQUITETURAL CENTRAL: Analytics é uma camada de LEITURA sobre as
+-- tabelas já existentes (campanhas, conteudos, conteudo_canais,
+-- oportunidades, leads, crm_contatos, crm_interacoes, ia_solicitacoes,
+-- whatsapp_mensagens, instagram_publicacoes, facebook_publicacoes,
+-- anuncios). Nenhuma tabela nova foi criada porque nenhuma é necessária:
+--
+-- - O isolamento multi-tenant já vem de graça das políticas RLS que cada
+--   uma dessas tabelas já possui (farmacia_id + pode_ver do módulo
+--   correspondente) — Analytics nunca faz SELECT com privilégio elevado,
+--   sempre como o próprio usuário autenticado, então um SELECT cross-tenant
+--   é impossível pela mesma razão que já é impossível em qualquer outro
+--   módulo: a política RLS da tabela de origem barra.
+-- - Os volumes esperados por farmácia (dezenas a poucas centenas de linhas
+--   por tabela) não justificam views materializadas, funções SQL de
+--   agregação, ou tabela de métricas derivada — seria "materialização
+--   prematura" (item 11 do escopo), adicionando complexidade e superfície
+--   de ataque (function search_path, grants) sem ganho de performance real
+--   neste estágio. A agregação é feita no frontend a partir de SELECTs
+--   enxutos (só as colunas necessárias, nunca "select *").
+-- - A única mudança de banco necessária é ativar o módulo 'analytics' na
+--   navegação — a linha já existia desde a migration 001 com
+--   disponivel=false, e pode_ver já está semeado para todos os papéis.
+--
+-- Se no futuro o volume de dados justificar agregação no servidor, a
+-- migração natural seria criar funções SQL (ou views) com
+-- SECURITY INVOKER e search_path explícito, preservando a RLS das tabelas
+-- de origem — não SECURITY DEFINER, que bypassaria o isolamento automático.
+-- ============================================================================
+
+update modulos set disponivel = true where id = 'analytics';

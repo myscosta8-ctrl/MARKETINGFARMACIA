@@ -163,8 +163,9 @@ export default function Dashboard() {
         Olá, {perfil?.nome?.split(' ')[0] ?? ''}
       </h1>
       <p className="text-ink-500 text-sm mt-1">
-        Campanhas, Produtos, Calendário, Conteúdo, Oportunidades, CRM, Leads, IA, WhatsApp,
-        Instagram, Facebook e Anúncios disponíveis. Os demais módulos entram nos próximos sprints.
+        Todos os módulos do catálogo original estão disponíveis: Campanhas, Produtos, Calendário,
+        Conteúdo, Oportunidades, CRM, Leads, IA, WhatsApp, Instagram, Facebook, Anúncios e
+        Analytics.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
@@ -178,6 +179,11 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
+
+      <Link to="/analytics" className="block mt-4 rounded-xl border border-mint-500/40 bg-mint-500/5 p-4 hover:border-mint-500 transition">
+        <p className="text-sm font-medium text-mint-400">Ver Analytics completo →</p>
+        <p className="text-xs text-ink-500 mt-1">Indicadores consolidados, funil de leads, distribuição por canal e comparação de período.</p>
+      </Link>
 
       <div className="mt-8 rounded-xl border border-base-800 bg-base-900 p-5">
         <h2 className="font-display text-lg text-ink-100 mb-2">O que já funciona</h2>
@@ -221,7 +227,11 @@ export default function Dashboard() {
           </li>
           <li>
             <Link to="/anuncios" className="text-mint-400 hover:text-mint-300">Anúncios</Link>
-            : planejamento e aprovação de anúncios pagos vinculados a campanhas (ativação real depende de credencial oficial — Meta Ads/Google Ads)
+            : planejamento e aprovação de anúncios pagos vinculados a campanhas (ativação real depende de credencial oficial)
+          </li>
+          <li>
+            <Link to="/analytics" className="text-mint-400 hover:text-mint-300">Analytics</Link>
+            : indicadores consolidados de todos os módulos acima, com filtro de período e comparação — só leitura, dados reais
           </li>
         </ul>
       </div>

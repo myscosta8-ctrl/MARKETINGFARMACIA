@@ -23,6 +23,7 @@ import WhatsAppPage from './modules/whatsapp/WhatsAppPage';
 import InstagramPage from './modules/instagram/InstagramPage';
 import FacebookPage from './modules/facebook/FacebookPage';
 import AnunciosLista from './modules/anuncios/AnunciosLista';
+import AnalyticsPage from './modules/analytics/AnalyticsPage';
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
             <Route path="instagram" element={<InstagramPage />} />
             <Route path="facebook" element={<FacebookPage />} />
             <Route path="anuncios" element={<AnunciosLista />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
           </Route>
         </Routes>
       </AuthProvider>
