@@ -1,16 +1,20 @@
 /**
  * Contrato base para qualquer integração externa (WhatsApp, Instagram,
- * Facebook, Anúncios, LC Sistemas). Nenhum adaptador concreto está
- * implementado neste sprint — isso depende de credenciais/API oficiais que
- * ainda não existem. Implementar aqui evitaria simular uma conexão que não
- * é real, o que a especificação proíbe explicitamente.
+ * Facebook, Anúncios, LC Sistemas).
  *
- * Quando uma credencial oficial existir:
- * 1. Criar `./adaptadores/whatsapp.js` (etc.) implementando esta classe.
- * 2. Armazenar a credencial no Supabase Vault (nunca em texto puro na tabela
- *    `integracoes.configuracao`, que é só para dados não-sensíveis).
- * 3. Atualizar `integracoes.status` para 'configurado' e, após o primeiro
- *    handshake bem-sucedido, 'conectado'.
+ * ATUALIZAÇÃO (Fase 2 — integrações reais): em vez de uma classe concreta
+ * por provedor rodando no navegador (que exigiria o token de acesso no
+ * cliente — proibido), a implementação real fica em
+ * `supabase/functions/meta-actions/` (Edge Function, roda no servidor,
+ * único lugar que vê o token, lido do Supabase Vault via
+ * `vault_ler_token_integracao`). Os `service.js` de cada módulo
+ * (`whatsapp/`, `instagram/`, `facebook/`) chamam essa Function via
+ * `supabase.functions.invoke('meta-actions', ...)`.
+ *
+ * Esta classe continua existindo como o contrato conceitual (testarConexao/
+ * sincronizar) e cobre integrações que ainda não têm nenhuma implementação
+ * (Anúncios, LC Sistemas) — nada foi quebrado, nenhum comportamento
+ * anterior mudou para quem ainda depende só desta interface.
  *
  * @interface
  */

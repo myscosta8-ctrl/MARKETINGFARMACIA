@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
 import { registrarAuditoria } from '../utils/auditoria';
+import { PainelIntegracoesMeta } from '../components/PainelIntegracoesMeta';
 
 export default function Configuracoes() {
   const { perfil } = useAuth();
@@ -94,6 +95,8 @@ export default function Configuracoes() {
           </button>
         )}
       </form>
+
+      <PainelIntegracoesMeta farmaciaId={farmacia.id} podeEditar={podeEditar} />
 
       <div className="mt-6 rounded-xl border border-base-800 bg-base-900 p-5">
         <h2 className="font-display text-lg text-ink-100 mb-1">Privacidade e LGPD</h2>
